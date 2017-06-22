@@ -28,7 +28,7 @@ void adjacent_for_each(
     std::distance(from1, to1), 
     std::distance(from2, to2));
 
-  for (std::size_t _ = 0; _ < size; ++_, ++from1, ++from2)
+  for (int _ = 0; _ < size; ++_, ++from1, ++from2)
     callback(*from1, *from2);
 }
 

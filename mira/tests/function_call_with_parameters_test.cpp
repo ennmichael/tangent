@@ -35,7 +35,8 @@ BOOST_AUTO_TEST_CASE(functions_visible_inside_body_test)
   
   const auto function_thunk = function_table.thunk_for_function(
     function_name,
-    {*function_table.thunk_for_function("2", {})});
+    {}
+  );
   BOOST_CHECK(function_thunk != boost::none);
   BOOST_CHECK_EQUAL(function_thunk->execute(), 4);
 }

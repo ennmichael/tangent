@@ -7,75 +7,13 @@
 namespace Tangent {
 namespace Mira {
 
-boost::optional<Thunk> Function_table::thunk_for_function(
-  const Function_name& name, 
-  const Parameter_values& values) const
-{ 
-  if (const auto function = find_function_by_name(name)) {
-    (void)values; // TODO
-    return Thunk(Functions_visible_inside_body({}, {}), function->body);
-  }
-  
-  return boost::none;
-}
-
-void Function_table::add_function(const Function& function)
+Number Function::execute(const Parameter_values& values) const
 {
-  functions_.push_back(function);
-}
-
-boost::optional<Function> Function_table::find_function_by_name(
-  const Function_name& name) const
-{
-  const auto function_name_comparer = [&name](const Function& function)
-  {
-    return function.name == name;
-  };
-  
-  return Utils::optionally_find_if(
-    functions_.cbegin(), 
-    functions_.cend(), 
-    function_name_comparer);
-}
-
-Functions_visible_inside_body::Functions_visible_inside_body(
-  Outer_function_table outer,
-  Inner_function_table inner)
-  : outer_(std::move(outer))
-  , inner_(std::move(inner))
-{
-}
-
-boost::optional<Thunk> Functions_visible_inside_body::thunk_for_function(
-  const Function_name& name,
-  const Parameter_values& parameter_values) const
-{
-  const auto find_required_thunk_from_table = 
-  [&](const auto& table)
-  {
-    return table.thunk_for_function(name, parameter_values);
-  };
-  
-  if (const auto outer_thunk = find_required_thunk_from_table(outer_)) {
-    return *outer_thunk;
-  }
-  return find_required_thunk_from_table(inner_);
-}
-
-Thunk::Thunk(
-  const Function& function,
-  const Outer_function_table& outer_table,
-  const Parameter_values& parameter_values)
-  : visible_functions_(
-      outer_table, 
-      parameter_function_table(function.parameter_names, parameter_values)),
-  , body_to_execute(function.body)
-{
-}
-
-Number Thunk::execute() const 
-{
-  return body_to_execute_(visible_functions_);
+  const Functions_visible_inside_body visible_functions(
+    closure, 
+    parameter_function_table(parameter_names, values)
+  );
+  return body(visible_functions);
 }
 
 Function_table parameter_function_table(
@@ -87,7 +25,7 @@ Function_table parameter_function_table(
   
   Function_table result;
 
-  adjacent_for_each(
+  Utils::adjacent_for_each(
     names.cbegin(),
     names.cend(),
     values.cbegin(),
@@ -102,6 +40,43 @@ Function_table parameter_function_table(
     });
 
   return result;
+}
+
+std::shared_ptr<const Function> Function_table::get_function(
+  const Function_name& name) const
+{
+  if (functions_.count(name))
+    return functions_.at(name);
+  return nullptr;
+}
+
+void Function_table::add_function(
+  const Function_name& name,
+  const std::shared_ptr<const Function>& function)
+{
+  functions_[name] = function;
+}
+
+Functions_visible_inside_body::Functions_visible_inside_body(
+  Outer_function_table outer,
+  Inner_function_table inner)
+  : outer_(std::move(outer))
+  , inner_(std::move(inner))
+{
+}
+
+<Function> Functions_visible_inside_body::get_function(
+  const Function_name& name) const
+{
+  const auto get_required_function_from_table =
+  [&](const auto& table)
+  {
+    return table.get_function(name);
+  };
+  
+  if (const auto outer_function = get_required_function_from_table(outer_))
+    return *outer_function;
+  return get_required_function_from_table(inner_);
 }
 
 }
