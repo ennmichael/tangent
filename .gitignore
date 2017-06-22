@@ -1,4 +1,5 @@
 build/
 .clang-format
 format
+*.swp
 
