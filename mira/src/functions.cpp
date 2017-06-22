@@ -81,7 +81,8 @@ Function_table parameter_function_table(
 {
   if (names.size() != values.size())
     throw User_errors::Incorrect_number_of_parameter_values();
-  for (const auto& pair : boost::)
+
+  // adjacent_for_each
 }
 
 }
