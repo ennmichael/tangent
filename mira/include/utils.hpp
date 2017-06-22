@@ -23,7 +23,7 @@ void adjacent_for_each(
   Iter1 from1, Iter1 to1,
   Iter2 from2, Iter2 to2,
   const Callback& callback)
-{ // TODO test this function
+{
   const auto size = std::min(
     std::distance(from1, to1), 
     std::distance(from2, to2));

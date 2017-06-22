@@ -64,9 +64,12 @@ boost::optional<Thunk> Functions_visible_inside_body::thunk_for_function(
 
 Thunk::Thunk(
   const Function& function,
+  const Outer_function_table& outer_table,
   const Parameter_values& parameter_values)
-  : visible_functions_(std::move(visible_functions))
-  , body_to_execute_(std::move(body_to_execute))
+  : visible_functions_(
+      outer_table, 
+      parameter_function_table(function.parameter_names, parameter_values)),
+  , body_to_execute(function.body)
 {
 }
 
@@ -81,8 +84,24 @@ Function_table parameter_function_table(
 {
   if (names.size() != values.size())
     throw User_errors::Incorrect_number_of_parameter_values();
+  
+  Function_table result;
 
-  // adjacent_for_each
+  adjacent_for_each(
+    names.cbegin(),
+    names.cend(),
+    values.cbegin(),
+    values.cend(),
+    [&result](const auto& name, const auto& value)
+    {
+      result.add_function({
+        name,
+        value.parameter_names,
+        value.body
+      });
+    });
+
+  return result;
 }
 
 }

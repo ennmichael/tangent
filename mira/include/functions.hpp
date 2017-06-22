@@ -10,6 +10,7 @@
 namespace Tangent {
 namespace Mira {
 
+struct Function;
 struct Functions_visible_inside_body;
 struct Thunk;
 class Function_table;
@@ -17,11 +18,11 @@ class Function_table;
 using Function_name = Program_text;
 using Function_body = Number(*)(const Functions_visible_inside_body&);
 using Parameter_names = std::vector<Program_text>;
-using Parameter_values = std::vector<Thunk>; // This is the juice
+using Parameter_values = std::vector<Function>;
 using Outer_function_table = Function_table;
 using Inner_function_table = Function_table;
 
-struct Function {
+struct Function { // TODO name shouldn't be part of this
   Program_text name;
   Parameter_names parameter_names;
   Function_body body;
@@ -55,7 +56,7 @@ private:
 
 class Thunk {
 public:
-  Thunk(const Function&, const Parameter_values&);
+  Thunk(const Function&, const Outer_function_table&, const Parameter_values&);
   
   Number execute() const;
 
