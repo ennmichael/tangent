@@ -32,6 +32,17 @@ void adjacent_for_each(
     callback(*from1, *from2);
 }
 
+template <class Container1, class Container2>
+Container1 chained(Container1 c1, Container2 c2)
+{
+  std::copy(
+    c2.cbegin(),
+    c2.cend(),
+    std::back_inserter(c1)
+  );
+  return c1;
+}
+
 }
 }
 }

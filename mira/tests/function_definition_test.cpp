@@ -10,16 +10,17 @@ BOOST_AUTO_TEST_CASE(function_defintion_test)
   constexpr auto function_name = "f1";
 
   Mira::Function_table tbl;
-  tbl.add_function({
+  tbl.add_function(
     function_name, 
-    {}, 
-    [](auto _) -> Mira::Number {
-      return 0;
-    }
-  });
+    Mira::Function(
+      {},
+      [](auto _) -> Mira::Number {
+        return 1;
+      }
+  ));
 
-  auto thunk = tbl.thunk_for_function(function_name, {});
-  BOOST_CHECK(thunk != boost::none);
-  BOOST_CHECK_EQUAL(thunk->execute(), 0);
+  auto function = tbl.function_named(function_name);
+  BOOST_CHECK(function != boost::none);
+  BOOST_CHECK_EQUAL(function->result(tbl), 1);
 }
 

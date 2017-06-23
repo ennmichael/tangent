@@ -12,32 +12,36 @@ BOOST_AUTO_TEST_CASE(functions_visible_inside_body_test)
 
   Mira::Function_table function_table;
   
-  function_table.add_function({
-  function_name, 
-  {"a"},
-  [](const auto& parameter_function_table) -> Mira::Number 
-  {
-    const auto a = parameter_function_table.thunk_for_function("a", {});
-    BOOST_CHECK(a != boost::none);
-    return a->execute() * a->execute();
-  }});
+  function_table.add_function(
+    function_name, 
+    Mira::Function({"n"},
+    [](const auto& visible_functions) -> Mira::Number 
+    {
+      const auto n = visible_functions.function_named("n");
+      BOOST_CHECK(n != boost::none);
+      return n->result(visible_functions.outer()) * 
+             n->result(visible_functions.outer());
+    }
+  ));
 
-  function_table.add_function({
+  function_table.add_function(
     "2",
-    {},
+    Mira::Function({},
     [](const auto&) -> Mira::Number
     {
       return 2;
-    }
-  });
-
-  // TODO write a double execute checking test
+    }));
   
-  const auto function_thunk = function_table.thunk_for_function(
-    function_name,
-    {}
+  auto function = function_table.function_named(function_name);
+  BOOST_CHECK(function != boost::none);
+  const auto two = function_table.function_named("2");
+  BOOST_CHECK(two != boost::none);
+
+  *function = function->curried({*two});
+  BOOST_CHECK_EQUAL(function->result(function_table), 4);
+  BOOST_CHECK_EQUAL(
+    function->result(function_table),
+    function->result(function_table)
   );
-  BOOST_CHECK(function_thunk != boost::none);
-  BOOST_CHECK_EQUAL(function_thunk->execute(), 4);
 }
 

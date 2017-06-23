@@ -17,6 +17,10 @@ class Incorrect_number_of_parameter_values : public Base_exception {
   // TODO
 };
 
+class Redefining_existing_function : public Base_exception {
+  // TODO
+};
+
 }
 
 namespace Internal_errors {
