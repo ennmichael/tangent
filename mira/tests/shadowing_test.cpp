@@ -8,9 +8,9 @@ BOOST_AUTO_TEST_CASE(functions_visible_inside_body_test)
 {
   namespace Mira = Tangent::Mira;
   
-  constexpr auto function1_name = "f1";
+  constexpr auto function1_name = "shadowed";
   constexpr auto function2_name = "f2";
-  constexpr auto function3_name = "f3";
+  constexpr auto function3_name = "shadowed";
 
   Mira::Function_table outer;
   outer.add_function(function1_name, Mira::Function(
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(functions_visible_inside_body_test)
   const auto f2 = visible_functions.function_named(function2_name);
   const auto f3 = visible_functions.function_named(function3_name);
   
-  BOOST_CHECK_EQUAL(f1.result(visible_functions.outer_table), 1);
+  BOOST_CHECK_EQUAL(f1.result(visible_functions.outer_table), 3);
   BOOST_CHECK_EQUAL(f2.result(visible_functions.outer_table), 2);
   BOOST_CHECK_EQUAL(f3.result(visible_functions.outer_table), 3);
 }

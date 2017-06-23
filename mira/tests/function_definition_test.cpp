@@ -20,7 +20,6 @@ BOOST_AUTO_TEST_CASE(function_defintion_test)
   ));
 
   auto function = tbl.function_named(function_name);
-  BOOST_CHECK(function != boost::none);
-  BOOST_CHECK_EQUAL(function->result(tbl), 1);
+  BOOST_CHECK_EQUAL(function.result(tbl), 1);
 }
 

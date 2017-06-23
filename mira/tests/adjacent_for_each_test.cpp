@@ -27,8 +27,8 @@ BOOST_AUTO_TEST_CASE(functions_visible_inside_body_test)
   std::vector<int> vec2_expected {10, 20, 30};
   std::vector<int> result_expected {11, 22, 33};
 
-  BOOST_CHECK_EQUAL(vec1, vec1_expected);
-  BOOST_CHECK_EQUAL(vec2, vec2_expected);
-  BOOST_CHECK_EQUAL(result, result_expected);
+  BOOST_CHECK(vec1 == vec1_expected);
+  BOOST_CHECK(vec2 == vec2_expected);
+  BOOST_CHECK(result == result_expected);
 }
 

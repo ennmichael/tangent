@@ -18,10 +18,10 @@ Function::Function(
 Number Function::result(const Function_table& function_table) const
 {
   assert_proper_parameters();
-  const Functions_visible_inside_body visible_functions(
+  const Functions_visible_inside_body visible_functions{
     function_table, 
     parameter_function_table()
-  );
+  };
   return body_(visible_functions);
 }
 
@@ -57,12 +57,20 @@ Function_table Function::parameter_function_table() const
   return result; 
 }
 
-boost::optional<Function> Function_table::function_named(
+boost::optional<Function> Function_table::optionally_function_named(
   const Function_name& name) const
 {
   if (functions_.count(name))
     return functions_.at(name);
   return boost::none;
+}
+
+Function Function_table::function_named(const Function_name& name) const
+{
+  const auto result = optionally_function_named(name);
+  return result ?
+           *result
+         : throw User_errors::Function_doesnt_exist();
 }
 
 void Function_table::add_function(
@@ -74,31 +82,12 @@ void Function_table::add_function(
   functions_.insert(std::make_pair(name, function));
 }
 
-Functions_visible_inside_body::Functions_visible_inside_body(
-  Outer_function_table outer,
-  Inner_function_table inner)
-  : outer_(std::move(outer))
-  , inner_(std::move(inner))
-{
-}
-
-boost::optional<Function> Functions_visible_inside_body::function_named(
+Function Functions_visible_inside_body::function_named(
   const Function_name& name) const
 {
-  const auto get_required_function_from_table =
-  [&](const auto& table)
-  {
-    return table.function_named(name);
-  };
-  
-  if (const auto inner_function = get_required_function_from_table(inner_))
-    return *inner_function;
-  return get_required_function_from_table(outer_);
-}
-
-Outer_function_table Functions_visible_inside_body::outer() const
-{
-  return outer_;
+  if (const auto inner_f = inner_table.optionally_function_named(name))
+    return *inner_f;
+  return outer_table.function_named(name);
 }
 
 }

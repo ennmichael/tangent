@@ -17,12 +17,8 @@ class Function_table;
 
 using Function_name = Program_text;
 using Function_body = Number(*)(const Functions_visible_inside_body&);
-// Function_body should take two parameters instead of one?
-// Or just ditch encapsulation on Names_visble_inside_function
 using Parameter_names = std::vector<Program_text>;
 using Parameter_values = std::vector<Function>;
-using Outer_function_table = Function_table;
-using Inner_function_table = Function_table;
 
 class Function {
 public:
@@ -42,7 +38,9 @@ private:
 
 class Function_table {
 public:
-  boost::optional<Function> function_named(const Function_name&) const;
+  boost::optional<Function> optionally_function_named(
+    const Function_name&) const;
+  Function function_named(const Function_name&) const;
   void add_function(
     const Function_name&, 
     const Function&);
@@ -53,14 +51,10 @@ private:
 
 class Functions_visible_inside_body {
 public: 
-  Functions_visible_inside_body(Outer_function_table, Inner_function_table);
-  
-  boost::optional<Function> function_named(const Function_name&) const;
-  Outer_function_table outer() const;
+  Function_table outer_table;
+  Function_table inner_table;
 
-private:
-  Outer_function_table outer_;
-  Inner_function_table inner_;
+  Function function_named(const Function_name&) const;
 };
 
 }
