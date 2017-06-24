@@ -11,9 +11,9 @@
 namespace Tangent {
 namespace Mira {
 
-struct Function;
-struct Functions_visible_inside_body;
+class Function;
 class Function_table;
+struct Functions_visible_inside_body;
 
 using Function_name = Program_text;
 using Function_body = Number(*)(const Functions_visible_inside_body&);
@@ -49,8 +49,7 @@ private:
   std::unordered_map<Function_name, Function> functions_;
 };
 
-class Functions_visible_inside_body {
-public: 
+struct Functions_visible_inside_body {
   Function_table outer_table;
   Function_table inner_table;
 

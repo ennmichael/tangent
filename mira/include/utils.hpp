@@ -3,6 +3,7 @@
 #include "boost/optional.hpp"
 #include <algorithm>
 #include <iterator>
+#include <regex>
 
 namespace Tangent {
 namespace Mira {
@@ -41,6 +42,21 @@ Container1 chained(Container1 c1, Container2 c2)
     std::back_inserter(c1)
   );
   return c1;
+}
+
+std::string string_replace(
+  const std::string& str, 
+  const std::string& replace_pattern,
+  const std::string& new_pattern)
+{
+  const std::regex replace_regex(replace_pattern);
+  return std::regex_replace(str, replace_regex, new_pattern);
+}
+
+template <class Iter>
+Iter first_space(Iter from, Iter to)
+{
+  return std::find(from, to, ' ');
 }
 
 }
